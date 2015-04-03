@@ -1,0 +1,9 @@
+Source: notadash
+Section: misc
+Priority: extra
+Maintainer: Brian Oldfield <brian@oldfield.io>
+Standards-Version: 3.9.4
+
+Package: notadash
+Architecture: any
+Description: monitoring dashboard for the Mesos/Marathon/Docker stack
