@@ -5,7 +5,7 @@ import (
     "fmt"
     "bytes"
     "github.com/codegangsta/cli"
-    lib "../lib"
+    lib "github.com/boldfield/notadash/lib"
 )
 
 

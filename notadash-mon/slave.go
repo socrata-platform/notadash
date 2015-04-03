@@ -5,7 +5,7 @@ import (
     "fmt"
     "github.com/codegangsta/cli"
     "github.com/ryanuber/columnize"
-    lib "../lib"
+    lib "github.com/boldfield/notadash/lib"
 )
 
 var csRequired = []string{
