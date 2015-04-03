@@ -1,16 +1,19 @@
 package main
 
 import (
+    "os"
+    "path/filepath"
     "github.com/codegangsta/cli"
 )
 
+var VERSION string
 
 func buildApp() *cli.App {
     app := cli.NewApp()
     app.Name = "notadash-mon"
     app.Usage = "Monitoring utility for the Mesos/Marathon/Docker stack --> decidedly not-a-dash"
     app.EnableBashCompletion = true
-    app.Version = "0.1.0"
+    app.Version = VERSION
 
     app.Flags = []cli.Flag{
         cli.StringFlag{
@@ -20,3 +23,5 @@ func buildApp() *cli.App {
             EnvVar: "NOTADASH_CONFIG",
         },
     }
+    return app
+}

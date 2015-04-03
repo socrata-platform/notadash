@@ -10,7 +10,7 @@ func buildApp() *cli.App {
     app.Name = "notadash-mon"
     app.Usage = "Monitoring utility for the Mesos/Marathon/Docker stack --> decidedly not-a-dash"
     app.EnableBashCompletion = true
-    app.Version = "0.1.0"
+    app.Version = "0.1.0-alpha"
 
     app.Flags = []cli.Flag{
         cli.BoolFlag{
