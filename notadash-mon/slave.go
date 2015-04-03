@@ -67,16 +67,18 @@ func checkSlave(ctx *cli.Context) {
         }
     }
 
+    containerAccount := make(map[string]bool)
+    orphanedContainers := make(map[string]bool)
     output := make([]string, 1)
     output[0] = "Application | Task ID | Slave Host | Mesos/Marathon/Docker"
     discrepancy := false
-
 
     for _, a := range marathonApps.Apps {
         app_discrepancy := false
         app_output := make([]string, 1)
         app_output[0] = fmt.Sprintf("%s| | | ", a.Id)
         for _, t := range a.Tasks {
+            containerAccount[t.Container] = true
             var containerRunning = lib.ContainerRunning(t.Container)
             if !(t.Mesos && t.Marathon) || !containerRunning {
                 app_discrepancy = true
@@ -96,10 +98,29 @@ func checkSlave(ctx *cli.Context) {
         }
     }
 
-    if discrepancy {
-        fmt.Println(lib.PrintYellow("Discrepency in task state found!"))
-        result := columnize.SimpleFormat(output)
-        fmt.Println(result)
+    for _, container := range lib.ListRunningContainers() {
+        if !containerAccount[container] {
+            orphanedContainers[container] = true
+        }
+    }
+
+    if discrepancy || len(orphanedContainers) > 0 {
+        if discrepancy {
+            fmt.Println(lib.PrintYellow("Discrepency in task state found!"))
+            result := columnize.SimpleFormat(output)
+            fmt.Println(result)
+        }
+        if len(orphanedContainers) > 0 {
+            fmt.Println(lib.PrintYellow("Orphaned docker containers found!"))
+            tmp_output := []string{
+                "Orphaned Docker Containers | ",
+            }
+            for c := range orphanedContainers {
+                tmp_output = append(tmp_output, fmt.Sprintf(" | %s", lib.PrintRed(c)))
+            }
+            result := columnize.SimpleFormat(output)
+            fmt.Println(result)
+        }
         os.Exit(2)
     } else {
         fmt.Println(lib.PrintGreen("Mesos and Marathon agree about running tasks!"))
