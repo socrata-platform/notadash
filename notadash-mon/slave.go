@@ -118,7 +118,7 @@ func checkSlave(ctx *cli.Context) {
             for c := range orphanedContainers {
                 tmp_output = append(tmp_output, fmt.Sprintf(" | %s", lib.PrintRed(c)))
             }
-            result := columnize.SimpleFormat(output)
+            result := columnize.SimpleFormat(tmp_output)
             fmt.Println(result)
         }
         os.Exit(2)
