@@ -3,6 +3,7 @@ package lib
 import (
     "os"
     "fmt"
+    "regexp"
     "github.com/fsouza/go-dockerclient"
 )
 
