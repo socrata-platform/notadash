@@ -2,6 +2,8 @@ package main
 
 import (
     "os"
+    "os/exec"
+    "bytes"
     "fmt"
     "github.com/codegangsta/cli"
     "github.com/ryanuber/columnize"
@@ -31,16 +33,16 @@ func checkSlave(ctx *cli.Context) {
         Host: ctx.GlobalString("mesos-host"),
     }
 
-    var host string
-    if ip, err := lib.GetExternalIP(); err != nil {
-        fmt.Println(err)
-        fmt.Println("Unable to determin local host's IP, can't to proceed.")
-        os.Exit(1)
-    } else {
-        host = fmt.Sprintf("%s", ip)
+    cmd := exec.Command("/bin/hostname","-f")
+    host, err := cmd.Output()
+    if err != nil {
+        fmt.Println("Unable to determin fully qualified name of host...")
     }
 
-    slave := mesos.LoadSlave(host)
+    host = bytes.Trim(host, " \n\t")
+    fmt.Println(string(host))
+
+    slave := mesos.LoadSlave(string(host))
     slaveFrameworks := slave.Framework("marathon")
     marathonApps := &lib.MarathonApps{}
 
