@@ -7,7 +7,7 @@ import (
 )
 
 var (
-    containerRe, _ := regexp.Compile(`[^/]+`)
+    containerRe, _ = regexp.Compile(`[^/]+`)
 )
 
 // TODO (boldfield) :: This is kind of stupid... we shouldn't be loading all running containers 
