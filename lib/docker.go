@@ -6,6 +6,9 @@ import (
     "github.com/fsouza/go-dockerclient"
 )
 
+var (
+    containerRe, _ := regexp.Compile(`[^/]+`)
+)
 
 // TODO (boldfield) :: This is kind of stupid... we shouldn't be loading all running containers 
 // TODO (boldfield) :: every time we check for the existance of a single container
@@ -19,7 +22,8 @@ func ContainerRunning(container string) (bool) {
     } else {
         for _, c := range containers {
             for _, n := range c.Names {
-                if n == container {
+                clean = containerRe.FindString(n)
+                if clean == container {
                     return true
                 }
             }
@@ -41,7 +45,8 @@ func ListRunningContainers() ([]string) {
     } else {
         for _, c := range containers {
             for _, n := range c.Names {
-                runningContainers = append(runningContainers, n)
+                clean = containerRe.FindString(n)
+                runningContainers = append(runningContainers, clean)
             }
         }
     }
