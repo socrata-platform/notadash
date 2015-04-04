@@ -4,13 +4,14 @@ import (
     "github.com/codegangsta/cli"
 )
 
+var VERSION = "0.1.0-beta"
 
 func buildApp() *cli.App {
     app := cli.NewApp()
     app.Name = "notadash-mon"
     app.Usage = "Monitoring utility for the Mesos/Marathon/Docker stack --> decidedly not-a-dash"
     app.EnableBashCompletion = true
-    app.Version = "0.1.0-alpha"
+    app.Version = VERSION
 
     app.Flags = []cli.Flag{
         cli.BoolFlag{

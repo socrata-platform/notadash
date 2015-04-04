@@ -40,8 +40,6 @@ func checkSlave(ctx *cli.Context) {
     }
 
     host = bytes.Trim(host, " \n\t")
-    fmt.Println(string(host))
-
     slave := mesos.LoadSlave(string(host))
     slaveFrameworks := slave.Framework("marathon")
     marathonApps := &lib.MarathonApps{}
@@ -82,7 +80,6 @@ func checkSlave(ctx *cli.Context) {
         for _, t := range a.Tasks {
             containerAccount[t.Container] = true
             var containerRunning = lib.ContainerRunning(t.Container)
-            fmt.Printf("Task registered with container: %s, running: %t", t.Container, containerRunning)
             if !(t.Mesos && t.Marathon) {
                 app_discrepancy = true
                 ln := fmt.Sprintf(
