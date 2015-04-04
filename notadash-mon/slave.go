@@ -80,7 +80,8 @@ func checkSlave(ctx *cli.Context) {
         for _, t := range a.Tasks {
             containerAccount[t.Container] = true
             var containerRunning = lib.ContainerRunning(t.Container)
-            if !(t.Mesos && t.Marathon) || !containerRunning {
+            fmt.Printf("Task registered with container: %s, running: %t", t.Container, containerRunning)
+            if !(t.Mesos && t.Marathon) {
                 app_discrepancy = true
                 ln := fmt.Sprintf(
                     " | %s | %s | %s/%s/%s",
