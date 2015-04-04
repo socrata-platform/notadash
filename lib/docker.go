@@ -23,7 +23,7 @@ func ContainerRunning(container string) (bool) {
     } else {
         for _, c := range containers {
             for _, n := range c.Names {
-                clean = containerRe.FindString(n)
+                clean := containerRe.FindString(n)
                 if clean == container {
                     return true
                 }
@@ -46,7 +46,7 @@ func ListRunningContainers() ([]string) {
     } else {
         for _, c := range containers {
             for _, n := range c.Names {
-                clean = containerRe.FindString(n)
+                clean := containerRe.FindString(n)
                 runningContainers = append(runningContainers, clean)
             }
         }
