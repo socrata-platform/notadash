@@ -34,9 +34,9 @@ func checkTasks(ctx *cli.Context) {
     }
     marathon.LoadApps()
 
+    mesosFrameworks := mesos.Framework("marathon")
     marathonApps := &lib.MarathonApps{}
 
-    mesosFrameworks := mesos.Framework("marathon")
     if len(mesosFrameworks) > 0 {
         for _, a := range marathon.Apps {
             if tasks, err := marathon.Client().Tasks(a.ID); err != nil {
@@ -44,14 +44,17 @@ func checkTasks(ctx *cli.Context) {
                 os.Exit(1)
             } else {
                 for _, t := range tasks.Tasks {
-                    taskSlave := mesos.Cluster.GetSlaveByHostName(t.Host)
-                    marathonApps.AddTask(t.ID, t.AppID, taskSlave.Id, taskSlave.HostName, false, true)
+                    if slave.Slave.HostName == t.Host {
+                        marathonApps.AddTask(t.ID, t.AppID, slave.Slave.Id, slave.Slave.HostName, false, true)
+                    }
                 }
             }
-            for _, f := range mesosFrameworks {
-                for _, t := range f.Tasks {
-                    taskSlave := mesos.Cluster.GetSlaveById(t.SlaveId)
-                    marathonApps.AddTask(t.Id, t.AppId(), taskSlave.Id, taskSlave.HostName, true, false)
+            for _, f := range slaveFrameworks {
+                for _, e := range f.Executors {
+                    for _, t := range e.Tasks {
+                        mTask := marathonApps.AddTask(t.Id, t.AppId(), slave.Slave.Id, slave.Slave.HostName, true, false)
+                        mTask.Container = e.RegisteredContainerName()
+                    }
                 }
             }
         }
@@ -61,13 +64,12 @@ func checkTasks(ctx *cli.Context) {
     output[0] = "Application | Task ID | Slave Host | Mesos/Marathon"
     discrepancy := false
 
-
     for _, a := range marathonApps.Apps {
         app_discrepancy := false
         app_output := make([]string, 1)
         app_output[0] = fmt.Sprintf("%s| | | ", a.Id)
         for _, t := range a.Tasks {
-            if !t.Mesos || !t.Marathon  {
+            if !(t.Mesos && t.Marathon) {
                 app_discrepancy = true
                 ln := fmt.Sprintf(
                     " | %s | %s | %s/%s",

@@ -46,8 +46,8 @@ func buildApp() *cli.App {
             Name: "slave",
             Flags: []cli.Flag{
                 cli.BoolFlag{
-                    Name:  "docker-verify",
-                    Usage: "Verify running containers match expectations. Assumes command is being run on a slave",
+                    Name:  "--kill-stragglers",
+                    Usage: "Kill containers which are still running and registered with Mesos, but Marathon has inconveniently forgotten.",
                 },
             },
             Usage:  "Verify all tasks registered for mesos slave are running as expected. Must be run on target mesos slave.",

@@ -3,7 +3,9 @@ package lib
 import (
     "fmt"
     "net"
+    "os"
     "errors"
+    "golang.org/x/crypto/ssh/terminal"
 )
 
 const CLR_Y = "\x1b[33;1m"
@@ -13,6 +15,10 @@ const CLR_R = "\x1b[31;1m"
 const CLR_G = "\x1b[32;1m"
 
 
+func isTTY() (bool) {
+    return terminal.IsTerminal(int(os.Stdin.Fd()))
+}
+
 func PrintBool(b bool) (string) {
     if b { return PrintGreen("true") }
     return PrintRed("false")
@@ -20,17 +26,29 @@ func PrintBool(b bool) (string) {
 
 
 func PrintRed(txt string) (string) {
-    return fmt.Sprintf("%s%s%s", CLR_R, txt, CLR_N)
+    if isTTY() {
+        return fmt.Sprintf("%s%s%s", CLR_R, txt, CLR_N)
+    } else {
+        return txt
+    }
 }
 
 
 func PrintGreen(txt string) (string) {
-    return fmt.Sprintf("%s%s%s", CLR_G, txt, CLR_N)
+    if isTTY() {
+        return fmt.Sprintf("%s%s%s", CLR_G, txt, CLR_N)
+    } else {
+        return txt
+    }
 }
 
 
 func PrintYellow(txt string) (string) {
-    return fmt.Sprintf("%s%s%s", CLR_Y, txt, CLR_N)
+    if isTTY() {
+        return fmt.Sprintf("%s%s%s", CLR_Y, txt, CLR_N)
+    } else {
+        return txt
+    }
 }
 
 
