@@ -57,7 +57,7 @@ func ListRunningContainers() ([]string) {
 func StopContainer(name string, timeout uint) (error) {
     endpoint := "unix:///var/run/docker.sock"
     client, _ := docker.NewClient(endpoint)
-    fmt.Printf("%s: %s", PrintRed("Stopping running container: %s\n"), name)
+    fmt.Printf("%s: %s\n", PrintRed("Stopping running container"), name)
     err := client.StopContainer(name, timeout) // Give the container 5min to shut down
     return err
 }
