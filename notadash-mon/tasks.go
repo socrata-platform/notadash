@@ -44,15 +44,15 @@ func checkTasks(ctx *cli.Context) {
                 os.Exit(1)
             } else {
                 for _, t := range tasks.Tasks {
-                    if slave.Slave.HostName == t.Host {
-                        marathonApps.AddTask(t.ID, t.AppID, slave.Slave.Id, slave.Slave.HostName, false, true)
-                    }
+                    taskSlave := mesos.Cluster.GetSlaveByHostName(t.Host)
+                    marathonApps.AddTask(t.ID, t.AppID, taskSlave.Id, taskSlave.HostName, false, true)
                 }
             }
-            for _, f := range slaveFrameworks {
+            for _, f := range mesosFrameworks {
                 for _, e := range f.Executors {
                     for _, t := range e.Tasks {
-                        mTask := marathonApps.AddTask(t.Id, t.AppId(), slave.Slave.Id, slave.Slave.HostName, true, false)
+                        taskSlave := mesos.Cluster.GetSlaveById(t.SlaveId)
+                        mTask := marathonApps.AddTask(t.Id, t.AppId(), taskSlave.Id, taskSlave.HostName, true, false)
                         mTask.Container = e.RegisteredContainerName()
                     }
                 }
