@@ -46,7 +46,7 @@ func buildApp() *cli.App {
             Name: "slave",
             Flags: []cli.Flag{
                 cli.BoolFlag{
-                    Name:  "--kill-stragglers",
+                    Name:  "kill-stragglers",
                     Usage: "Kill containers which are still running and registered with Mesos, but Marathon has inconveniently forgotten.",
                 },
             },
