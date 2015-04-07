@@ -81,16 +81,22 @@ func checkSlave(ctx *cli.Context) {
             containerAccount[t.Container] = true
             var containerRunning = lib.ContainerRunning(t.Container)
             if !(t.Mesos && t.Marathon) {
-                app_discrepancy = true
-                ln := fmt.Sprintf(
-                    " | %s | %s | %s/%s/%s",
-                    t.Id,
-                    t.SlaveHost,
-                    lib.PrintBool(t.Mesos),
-                    lib.PrintBool(t.Marathon),
-                    lib.PrintBool(containerRunning),
-                )
-                app_output = append(app_output, ln)
+                if ctx.Bool("kill-stragglers") && containerRunning {
+                    if err := lib.StopContainer(t.Container, 300); err != nil {
+                        fmt.Printf("An error occoured while trying to stop container (%s): %s\n", t.Container, err)
+                    }
+                } else {
+                    app_discrepancy = true
+                    ln := fmt.Sprintf(
+                        " | %s | %s | %s/%s/%s",
+                        t.Id,
+                        t.SlaveHost,
+                        lib.PrintBool(t.Mesos),
+                        lib.PrintBool(t.Marathon),
+                        lib.PrintBool(containerRunning),
+                    )
+                    app_output = append(app_output, ln)
+                }
             }
         }
         if discrepancy = app_discrepancy; discrepancy {
