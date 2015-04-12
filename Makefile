@@ -12,6 +12,7 @@ build-mon:
 
 test-deps:
 	go get github.com/stretchr/testify
+	go get golang.org/x/tools/cmd/cover
 
 build-deps:
 	# TODO (boldfield) :: Generalize this
