@@ -10,6 +10,9 @@ build-mon:
 		-ldflags "-X main.VERSION $(shell cat notadash-mon/VERSION)" \
 		notadash-mon/*.go
 
+test-deps:
+	go get github.com/stretchr/testify
+
 build-deps:
 	# TODO (boldfield) :: Generalize this
 	go get github.com/codegangsta/cli
