@@ -5,6 +5,13 @@ import (
     marathon "github.com/gambol99/go-marathon"
 )
 
+
+type MarathonClient interface {
+    ListApplications() ([]string, error)
+    Applications()  (*marathon.Applications, error)
+
+}
+
 type Marathon struct {
     Host string
     Apps []marathon.Application
@@ -44,9 +51,8 @@ func (m *Marathon) Client() marathon.Marathon {
     return m._client
 }
 
-func (m *Marathon) LoadApps() error {
-    m.Client().ListApplications()
-    if applications, err := m.Client().Applications(); err != nil {
+func (m *Marathon) LoadApps(client MarathonClient) error {
+    if applications, err := client.Applications(); err != nil {
         log.Println("Failed to list applications")
         return ErrMesosError
     } else {

@@ -27,11 +27,13 @@ func checkSlave(ctx *cli.Context) {
     marathon := &lib.Marathon{
         Host: ctx.GlobalString("marathon-host"),
     }
-    marathon.LoadApps()
+    marathonClient := marathon.Client()
+    marathon.LoadApps(marathonClient)
 
     mesos := &lib.Mesos{
         Host: ctx.GlobalString("mesos-host"),
     }
+    mesosClient := mesos.Client()
 
     cmd := exec.Command("/bin/hostname","-f")
     host, err := cmd.Output()
@@ -40,7 +42,7 @@ func checkSlave(ctx *cli.Context) {
     }
 
     host = bytes.Trim(host, " \n\t")
-    slave := mesos.LoadSlave(string(host))
+    slave := mesos.LoadSlave(string(host), mesosClient)
     slaveFrameworks := slave.Framework("marathon")
     marathonApps := &lib.MarathonApps{}
 
@@ -72,6 +74,7 @@ func checkSlave(ctx *cli.Context) {
     output := make([]string, 1)
     output[0] = "Application | Task ID | Slave Host | Mesos/Marathon/Docker"
     discrepancy := false
+    dockerClient := lib.NewDockerClient()
 
     for _, a := range marathonApps.Apps {
         app_discrepancy := false
@@ -79,10 +82,15 @@ func checkSlave(ctx *cli.Context) {
         app_output[0] = fmt.Sprintf("%s| | | ", a.Id)
         for _, t := range a.Tasks {
             containerAccount[t.Container] = true
-            var containerRunning = lib.ContainerRunning(t.Container)
+            containerRunning, err := lib.ContainerRunning(t.Container, dockerClient)
+            if err != nil {
+                fmt.Println(lib.PrintRed("An error occoured while determining if docker container is running!"))
+                fmt.Println(err)
+                os.Exit(1)
+            }
             if !(t.Mesos && t.Marathon) {
                 if ctx.Bool("kill-stragglers") && containerRunning {
-                    if err := lib.StopContainer(t.Container, 300); err != nil {
+                    if err := lib.StopContainer(t.Container, 300, dockerClient); err != nil {
                         fmt.Printf("An error occoured while trying to stop container (%s): %s\n", t.Container, err)
                     }
                 } else {
@@ -104,7 +112,13 @@ func checkSlave(ctx *cli.Context) {
         }
     }
 
-    for _, container := range lib.ListRunningContainers() {
+    containers, err := lib.ListRunningContainers(dockerClient)
+    if err != nil {
+        fmt.Println(lib.PrintRed("An error occoured while determining if docker container is running!"))
+        fmt.Println(err)
+        os.Exit(1)
+    }
+    for _, container := range containers {
         if !containerAccount[container] {
             orphanedContainers[container] = true
         }
