@@ -29,20 +29,20 @@ func (m *Mesos) Client() *mesos.Client {
     return m._client
 }
 
-func (m *Mesos) LoadCluster() error {
-    if cluster, err := mesos.DiscoverCluster(m.Client()); err != nil {
+func (m *Mesos) LoadCluster(c *mesos.Client) error {
+    if cluster, err := mesos.DiscoverCluster(c); err != nil {
         log.Println(err)
         return err
     } else {
         m.Cluster = cluster
     }
 
-    if err := m.Cluster.LoadSlaveStates(m.Client()); err != nil {
+    if err := m.Cluster.LoadSlaveStates(c); err != nil {
         log.Printf("An error was encountered loading slave states: %s", err)
         return err
     }
 
-    if err := m.Cluster.LoadSlaveStats(m.Client()); err != nil {
+    if err := m.Cluster.LoadSlaveStats(c); err != nil {
         log.Printf("An error was encountered loading slave states: %s", err)
         return err
     }
@@ -55,9 +55,9 @@ func (m *Mesos) Framework(framework string) (map[string]*mesos.Framework) {
 }
 
 
-func (m *Mesos) LoadSlave(host string) (*MesosSlave){
+func (m *Mesos) LoadSlave(host string, c *mesos.Client) (*MesosSlave){
     slave := &mesos.Slave{ HostName: host }
-    slave.LoadState(m.Client())
+    slave.LoadState(c)
     return &MesosSlave{ Slave: slave }
 }
 

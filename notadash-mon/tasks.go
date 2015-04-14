@@ -27,19 +27,21 @@ func checkTasks(ctx *cli.Context) {
     mesos := &lib.Mesos{
         Host: ctx.GlobalString("mesos-host"),
     }
-    mesos.LoadCluster()
+    mesosClient := mesos.Client()
+    mesos.LoadCluster(mesosClient)
 
     marathon := &lib.Marathon{
         Host: ctx.GlobalString("marathon-host"),
     }
-    marathon.LoadApps()
+    marathonClient := marathon.Client()
+    marathon.LoadApps(marathonClient)
 
     mesosFrameworks := mesos.Framework("marathon")
     marathonApps := &lib.MarathonApps{}
 
     if len(mesosFrameworks) > 0 {
         for _, a := range marathon.Apps {
-            if tasks, err := marathon.Client().Tasks(a.ID); err != nil {
+            if tasks, err := marathonClient.Tasks(a.ID); err != nil {
                 fmt.Println(err)
                 os.Exit(1)
             } else {

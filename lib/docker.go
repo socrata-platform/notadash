@@ -1,9 +1,9 @@
 package lib
 
 import (
-    "os"
     "fmt"
     "regexp"
+
     "github.com/fsouza/go-dockerclient"
 )
 
@@ -11,38 +11,41 @@ var (
     containerRe, _ = regexp.Compile(`[^/]+`)
 )
 
-// TODO (boldfield) :: This is kind of stupid... we shouldn't be loading all running containers 
-// TODO (boldfield) :: every time we check for the existance of a single container
-func ContainerRunning(container string) (bool) {
+func NewDockerClient() (*docker.Client) {
     endpoint := "unix:///var/run/docker.sock"
     client, _ := docker.NewClient(endpoint)
+    return client
+}
+
+type DockerClient interface {
+    ListContainers(opts docker.ListContainersOptions) ([]docker.APIContainers, error)
+    StopContainer(id string, ttl uint) (error)
+}
+
+// TODO (boldfield) :: This is kind of stupid... we shouldn't be loading all running containers 
+// TODO (boldfield) :: every time we check for the existance of a single container
+func ContainerRunning(container string, client DockerClient) (bool, error) {
     if containers, err := client.ListContainers(docker.ListContainersOptions{ All: false }); err != nil {
-        fmt.Println(PrintRed("An error occoured while determining if docker container is running!"))
-        fmt.Println(err)
-        os.Exit(1)
+        return false, err
     } else {
         for _, c := range containers {
             for _, n := range c.Names {
                 clean := containerRe.FindString(n)
                 if clean == container {
-                    return true
+                    return true, nil
                 }
             }
         }
     }
-    return false
+    return false, nil
 }
 
 
 // TODO (boldfield) :: Using this method as a data source for the above method would be nice...
-func ListRunningContainers() ([]string) {
+func ListRunningContainers(client DockerClient) ([]string, error) {
     runningContainers := make([]string, 0)
-    endpoint := "unix:///var/run/docker.sock"
-    client, _ := docker.NewClient(endpoint)
     if containers, err := client.ListContainers(docker.ListContainersOptions{ All: false }); err != nil {
-        fmt.Println(PrintRed("An error occoured while determining if docker container is running!"))
-        fmt.Println(err)
-        os.Exit(1)
+        return runningContainers, err
     } else {
         for _, c := range containers {
             for _, n := range c.Names {
@@ -51,12 +54,10 @@ func ListRunningContainers() ([]string) {
             }
         }
     }
-    return runningContainers
+    return runningContainers, nil
 }
 
-func StopContainer(name string, timeout uint) (error) {
-    endpoint := "unix:///var/run/docker.sock"
-    client, _ := docker.NewClient(endpoint)
+func StopContainer(name string, timeout uint, client DockerClient) error {
     fmt.Printf("%s: %s\n", PrintRed("Stopping running container"), name)
     err := client.StopContainer(name, timeout) // Give the container 5min to shut down
     return err
