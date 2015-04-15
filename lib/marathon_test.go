@@ -236,7 +236,7 @@ func TestGetTaskById(t *testing.T) {
 
 func TestAddTaskExistingApp(t *testing.T) {
     apps := expMarathonApps()
-    apps.AddTask("new-fake-app-task", "/fake_app", "slave2", "slave2-host", true, false)
+    apps.AddTask("new-fake-app-task", "/fake_app", "slave2", "slave2-host", true, false, false)
     assert.Equal(t, apps.Apps[0].Tasks[0].Id, "fake-app-task", "Original task should still exist")
     assert.Equal(t, apps.Apps[0].Tasks[1].Id, "new-fake-app-task", "New Task ID should exist")
 }
@@ -244,7 +244,7 @@ func TestAddTaskExistingApp(t *testing.T) {
 
 func TestAddTaskNotExistingApp(t *testing.T) {
     apps := expMarathonApps()
-    apps.AddTask("faker-app-task", "/faker_app", "slave1", "slave1-host", true, false)
+    apps.AddTask("faker-app-task", "/faker_app", "slave1", "slave1-host", true, false, false)
     assert.Equal(t, apps.Apps[1].Id, "/faker_app", "New app should exist")
     assert.Equal(t, apps.Apps[1].Tasks[0].Id, "faker-app-task", "New app task should exist")
 }

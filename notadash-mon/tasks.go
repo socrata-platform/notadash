@@ -47,13 +47,13 @@ func checkTasks(ctx *cli.Context) {
             } else {
                 for _, t := range tasks.Tasks {
                     taskSlave := mesos.Cluster.GetSlaveByHostName(t.Host)
-                    marathonApps.AddTask(t.ID, t.AppID, taskSlave.Id, taskSlave.HostName, false, true)
+                    marathonApps.AddTask(t.ID, t.AppID, taskSlave.Id, taskSlave.HostName, false, true, false)
                 }
             }
             for _, f := range mesosFrameworks {
                 for _, t := range f.Tasks {
                     taskSlave := mesos.Cluster.GetSlaveById(t.SlaveId)
-                    marathonApps.AddTask(t.Id, t.AppId(), taskSlave.Id, taskSlave.HostName, true, false)
+                    marathonApps.AddTask(t.Id, t.AppId(), taskSlave.Id, taskSlave.HostName, true, false, false)
                 }
             }
         }

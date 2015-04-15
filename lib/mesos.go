@@ -5,6 +5,7 @@ import (
     mesos "github.com/boldfield/go-mesos"
 )
 
+type FrameworkMap map[string]*mesos.Framework
 
 type Mesos struct {
     Host string
@@ -50,18 +51,18 @@ func (m *Mesos) LoadCluster(c *mesos.Client) error {
 }
 
 
-func (m *Mesos) Framework(framework string) (map[string]*mesos.Framework) {
+func (m *Mesos) Framework(framework string) (FrameworkMap) {
     return m.Cluster.GetFramework(framework)
 }
 
 
-func (m *Mesos) LoadSlave(host string, c *mesos.Client) (*MesosSlave){
+func (m *Mesos) LoadSlave(host string, c *mesos.Client) (*MesosSlave, error){
     slave := &mesos.Slave{ HostName: host }
-    slave.LoadState(c)
-    return &MesosSlave{ Slave: slave }
+    err := slave.LoadState(c)
+    return &MesosSlave{ Slave: slave }, err
 }
 
 
-func (s *MesosSlave) Framework(framework string) (map[string]*mesos.Framework) {
+func (s *MesosSlave) Framework(framework string) (FrameworkMap) {
     return s.Slave.GetFramework(framework)
 }

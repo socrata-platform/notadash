@@ -34,6 +34,7 @@ type MarathonTask struct {
     SlaveHost string
     Mesos     bool
     Marathon  bool
+    Docker  bool
 }
 
 func (m *Marathon) Client() marathon.Marathon {
@@ -54,7 +55,7 @@ func (m *Marathon) Client() marathon.Marathon {
 func (m *Marathon) LoadApps(client MarathonClient) error {
     if applications, err := client.Applications(); err != nil {
         log.Println("Failed to list applications")
-        return ErrMesosError
+        return ErrMarathonError
     } else {
         m.Apps = applications.Apps
     }
@@ -84,11 +85,11 @@ func (a *MarathonApp) GetTaskById(taskId string) *MarathonTask {
 }
 
 
-func (a *MarathonApp) AddTask(taskId, slaveId, slaveHost string, mesos, marathon bool) *MarathonTask {
+func (a *MarathonApp) AddTask(taskId, slaveId, slaveHost string, mesos, marathon, docker bool) *MarathonTask {
     var task *MarathonTask
     task = a.GetTaskById(taskId)
     if task == nil {
-        task = &MarathonTask{ Id: taskId, SlaveHost: slaveHost, SlaveId: slaveId, Mesos: mesos, Marathon: marathon }
+        task = &MarathonTask{ Id: taskId, SlaveHost: slaveHost, SlaveId: slaveId, Mesos: mesos, Marathon: marathon, Docker: docker }
         a.Tasks = append(a.Tasks, task)
     }
     return task
@@ -110,7 +111,7 @@ func (ma *MarathonApps) AddApp(appId string) *MarathonApp {
 }
 
 
-func (ma *MarathonApps) AddTask(taskId, appId, slaveId, slaveHost string, mesos, marathon bool) *MarathonTask {
+func (ma *MarathonApps) AddTask(taskId, appId, slaveId, slaveHost string, mesos, marathon, docker bool) *MarathonTask {
     var app *MarathonApp
     var task *MarathonTask
 
@@ -122,11 +123,12 @@ func (ma *MarathonApps) AddTask(taskId, appId, slaveId, slaveHost string, mesos,
         app = ma.AddApp(appId)
     }
     if task == nil {
-        task = app.AddTask(taskId, slaveId, slaveHost, mesos, marathon)
+        task = app.AddTask(taskId, slaveId, slaveHost, mesos, marathon, docker)
     }
 
     if mesos { task.Mesos = mesos }
     if marathon { task.Marathon = marathon }
+    if docker { task.Docker = docker }
 
     return task
 }

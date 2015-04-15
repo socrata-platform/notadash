@@ -1,10 +1,19 @@
 package main
 
 import (
+    "os"
+    "fmt"
     "github.com/codegangsta/cli"
 )
 
 var VERSION = "0.1.0-beta"
+
+type boolmap map[string]bool
+
+var csRequired = []string{
+    "marathon-host",
+    "mesos-host",
+}
 
 func buildApp() *cli.App {
     app := cli.NewApp()
@@ -57,4 +66,16 @@ func buildApp() *cli.App {
 
 
     return app
+}
+
+
+func checkSlave(ctx *cli.Context) {
+    if missing, err := validateContext(ctx, csRequired); err != nil {
+        fmt.Println(err)
+        fmt.Printf("The following parameters must be defined: %s\n", missing)
+        os.Exit(1)
+    }
+
+    exitStatus := runCheckSlave(ctx)
+    os.Exit(exitStatus)
 }
