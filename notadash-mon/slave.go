@@ -13,7 +13,7 @@ import (
 func runCheckSlave(ctx *cli.Context) int {
     fmt.Println("Discoving running applications and associated tasks...")
 
-    marathon, err := loadMarathon(ctx.GlobalString("mesos-host"))
+    marathon, err := loadMarathon(ctx.GlobalString("marathon-host"))
     if err != nil {
         fmt.Println(err)
         return 1
@@ -80,23 +80,9 @@ func runCheckSlave(ctx *cli.Context) int {
             fmt.Println(result)
         }
         return 2
-    } else {
-        fmt.Println(lib.PrintGreen("Mesos and Marathon agree about running tasks!"))
-        return 0
     }
-}
-
-
-func loadMarathon(marathonHost string) (*lib.Marathon, error) {
-    marathon := &lib.Marathon{
-        Host: marathonHost,
-    }
-    marathonClient := marathon.Client()
-    err := marathon.LoadApps(marathonClient)
-    if err != nil {
-        return marathon, err
-    }
-    return marathon, nil
+    fmt.Println(lib.PrintGreen("Mesos and Marathon agree about running tasks!"))
+    return 0
 }
 
 

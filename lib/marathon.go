@@ -9,7 +9,7 @@ import (
 type MarathonClient interface {
     ListApplications() ([]string, error)
     Applications()  (*marathon.Applications, error)
-
+    Tasks(string) (*marathon.Tasks, error)
 }
 
 type Marathon struct {
@@ -54,10 +54,22 @@ func (m *Marathon) Client() marathon.Marathon {
 
 func (m *Marathon) LoadApps(client MarathonClient) error {
     if applications, err := client.Applications(); err != nil {
-        log.Println("Failed to list applications")
+        log.Println("Failed to list applications: ", err)
         return ErrMarathonError
     } else {
         m.Apps = applications.Apps
+    }
+    return nil
+}
+
+
+func (m *Marathon) LoadAppTasks(client MarathonClient, a *marathon.Application) error {
+    if tasks, err := client.Tasks(a.ID); err != nil {
+        return err
+    } else {
+        for _, task := range tasks.Tasks {
+            a.Tasks = append(a.Tasks, &task)
+        }
     }
     return nil
 }

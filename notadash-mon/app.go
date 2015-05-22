@@ -10,6 +10,11 @@ var VERSION = "0.1.0-beta"
 
 type boolmap map[string]bool
 
+var ctRequired = []string{
+    "marathon-host",
+    "mesos-host",
+}
+
 var csRequired = []string{
     "marathon-host",
     "mesos-host",
@@ -66,6 +71,18 @@ func buildApp() *cli.App {
 
 
     return app
+}
+
+
+func checkTasks(ctx *cli.Context) {
+    if missing, err := validateContext(ctx, ctRequired); err != nil {
+        fmt.Println(err)
+        fmt.Printf("The following parameters must be defined: %s\n", missing)
+        os.Exit(2)
+    }
+
+    exitStatus := runCheckTasks(ctx)
+    os.Exit(exitStatus)
 }
 
 

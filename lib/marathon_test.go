@@ -21,6 +21,24 @@ func (c *MockMarathonClient) ListApplications() ([]string, error) {
     return thing, nil
 }
 
+func (c *MockMarathonClient) Tasks(string) (*marathon.Tasks, error) {
+    jsonTasks := `{
+    "tasks": [
+        {
+            "appId":"/infrastructure/docker-registry",
+            "id":"infrastructure_docker-registry.872a3060-dfae-11e4-bdf0-3624e0a93f16",
+            "host":"ip-10-120-100-25.us-west-2.compute.internal",
+            "ports":[5000],
+            "startedAt":"2015-04-10T18:22:52.829Z",
+            "stagedAt":"2015-04-10T18:22:21.295Z",
+            "version":"2015-04-09T23:40:51.805Z"
+        }
+    ]
+}`
+	var expected marathon.Tasks
+	json.Unmarshal([]byte(jsonTasks), &expected)
+    return &expected, nil
+}
 
 func (c *MockMarathonClient) Applications()  (*marathon.Applications, error) {
 	jsonContainers := `{

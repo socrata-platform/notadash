@@ -28,3 +28,18 @@ func validateContext(ctx *cli.Context, strings []string) (string, error) {
     }
      return fmt.Sprintf(buffer.String()), err
 }
+
+
+func loadMarathon(marathonHost string) (*lib.Marathon, error) {
+    marathon := &lib.Marathon{
+        Host: marathonHost,
+    }
+    marathonClient := marathon.Client()
+    err := marathon.LoadApps(marathonClient)
+    if err != nil {
+        return marathon, err
+    }
+    return marathon, nil
+}
+
+
