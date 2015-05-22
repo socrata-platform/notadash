@@ -42,6 +42,10 @@ func buildApp() *cli.App {
             Usage: "URL to use for Mesos cluster discovery.",
             EnvVar: "NOTADASH_MESOS_URL",
         },
+        cli.BoolFlag{
+            Name:  "ignore-deploys",
+            Usage: "Ignore active deployments when checking consensus",
+        },
 //        cli.StringFlag{
 //            Name:  "c, config",
 //            Usage: "Specify a config file (default: ~/.notadash.gcfg)",

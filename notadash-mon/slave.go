@@ -28,7 +28,7 @@ func runCheckSlave(ctx *cli.Context) int {
     slaveFrameworks := slave.Framework("marathon")
 
     dockerClient := lib.NewDockerClient()
-    marathonApps, err := buildMesosMarathonMatrix(slave.Slave.Id, slave.Slave.HostName, slaveFrameworks, marathon, dockerClient)
+    marathonApps, err := buildMesosMarathonMatrix(slave.Slave.Id, slave.Slave.HostName, slaveFrameworks, marathon, dockerClient, ctx.GlobalBool("ignore-deploys"))
     if err != nil {
         fmt.Println(err)
         return 1
@@ -108,10 +108,14 @@ func loadMesos(mesosHost string) (*lib.MesosSlave, error) {
 }
 
 
-func buildMesosMarathonMatrix(slaveId, slaveHostName string, slaveFrameworks lib.FrameworkMap, marathon *lib.Marathon, dockerClient lib.DockerClient) (*lib.MarathonApps, error) {
+func buildMesosMarathonMatrix(slaveId, slaveHostName string, slaveFrameworks lib.FrameworkMap, marathon *lib.Marathon, dockerClient lib.DockerClient, ignoreDeploys bool) (*lib.MarathonApps, error) {
     marathonApps := &lib.MarathonApps{}
     if len(slaveFrameworks) > 0 {
         for _, a := range marathon.Apps {
+            if (len(a.DeploymentID) > 0 && ignoreDeploys) {
+                continue
+            }
+
             if tasks, err := marathon.Client().Tasks(a.ID); err != nil {
                 return nil, err
             } else {

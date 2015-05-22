@@ -31,6 +31,10 @@ func runCheckTasks(ctx *cli.Context) int {
 
     if len(mesosFrameworks) > 0 {
         for _, a := range marathon.Apps {
+            if (len(a.DeploymentID) > 0 && ctx.GlobalBool("ignore-deploys")) {
+                continue
+            }
+
             if tasks, err := marathonClient.Tasks(a.ID); err != nil {
                 fmt.Println(err)
                 return 1
@@ -57,6 +61,7 @@ func runCheckTasks(ctx *cli.Context) int {
         app_discrepancy := false
         app_output := make([]string, 1)
         app_output[0] = fmt.Sprintf("%s| | | ", a.Id)
+
         for _, t := range a.Tasks {
             if !(t.Mesos && t.Marathon) {
                 app_discrepancy = true
@@ -70,7 +75,8 @@ func runCheckTasks(ctx *cli.Context) int {
                 app_output = append(app_output, ln)
             }
         }
-        if discrepancy = app_discrepancy; discrepancy {
+        if app_discrepancy {
+            discrepancy = true
             output = append(output, app_output...)
         }
     }
