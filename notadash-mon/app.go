@@ -55,6 +55,11 @@ func buildApp() *cli.App {
     }
 
     app.Commands = []cli.Command{
+		{
+			Name: "resources",
+			Usage: "Show resource allocation per node across the cluster.",
+			Action: showAllocation,
+		},
         {
             Name: "tasks",
             Usage:  "Cross-check all tasks registered with Mesos and Marathon.",
@@ -75,6 +80,18 @@ func buildApp() *cli.App {
 
 
     return app
+}
+
+
+func showAllocation(ctx *cli.Context) {
+    if missing, err := validateContext(ctx, ctRequired); err != nil {
+        fmt.Println(err)
+        fmt.Printf("The following parameters must be defined: %s\n", missing)
+        os.Exit(2)
+    }
+
+    exitStatus := runShowAllocation(ctx)
+    os.Exit(exitStatus)
 }
 
 
