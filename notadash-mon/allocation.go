@@ -1,23 +1,22 @@
 package main
 
 import (
-    "fmt"
-    "github.com/codegangsta/cli"
-    "github.com/ryanuber/columnize"
-    lib "github.com/boldfield/notadash/lib"
+	"fmt"
+	lib "github.com/boldfield/notadash/lib"
+	"github.com/codegangsta/cli"
+	"github.com/ryanuber/columnize"
 )
-
 
 func runShowAllocation(ctx *cli.Context) int {
 	fmt.Println("Collecting worker resource allocation data...")
 
-    mesos := &lib.Mesos {
-        Host: ctx.GlobalString("mesos-host"),
-    }
-    mesosClient := mesos.Client()
-    mesos.LoadCluster(mesosClient)
+	mesos := &lib.Mesos{
+		Host: ctx.GlobalString("mesos-host"),
+	}
+	mesosClient := mesos.Client()
+	mesos.LoadCluster(mesosClient)
 
-    output := make([]string, 1)
+	output := make([]string, 1)
 	output[0] = "Hostnamme | Cpu % | Cpu Ratio | Mem % | Mem Ratio | Disk % | Disk Ratio"
 
 	for _, s := range mesos.Cluster.Slaves {

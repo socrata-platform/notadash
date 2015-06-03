@@ -1,28 +1,25 @@
 package lib
 
-
 import (
 	"encoding/json"
-    marathon "github.com/gambol99/go-marathon"
+	marathon "github.com/gambol99/go-marathon"
 
-    "testing"
-    "github.com/stretchr/testify/assert"
-    "github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"testing"
 )
 
-
 type MockMarathonClient struct {
-    mock.Mock
+	mock.Mock
 }
 
-
 func (c *MockMarathonClient) ListApplications() ([]string, error) {
-    var thing []string
-    return thing, nil
+	var thing []string
+	return thing, nil
 }
 
 func (c *MockMarathonClient) Tasks(string) (*marathon.Tasks, error) {
-    jsonTasks := `{
+	jsonTasks := `{
     "tasks": [
         {
             "appId":"/infrastructure/docker-registry",
@@ -37,10 +34,10 @@ func (c *MockMarathonClient) Tasks(string) (*marathon.Tasks, error) {
 }`
 	var expected marathon.Tasks
 	json.Unmarshal([]byte(jsonTasks), &expected)
-    return &expected, nil
+	return &expected, nil
 }
 
-func (c *MockMarathonClient) Applications()  (*marathon.Applications, error) {
+func (c *MockMarathonClient) Applications() (*marathon.Applications, error) {
 	jsonContainers := `{
     "apps": [
         {
@@ -173,113 +170,105 @@ func (c *MockMarathonClient) Applications()  (*marathon.Applications, error) {
 }`
 	var expected marathon.Applications
 	json.Unmarshal([]byte(jsonContainers), &expected)
-    return &expected, nil
+	return &expected, nil
 }
-
 
 func expApplications() *marathon.Applications {
-    return &marathon.Applications {
-        Apps: []marathon.Application {
-            marathon.Application{
-                ID: "/fake_app",
-                CPUs: float32(0.5),
-                Mem: float32(64),
-                Disk: float32(0),
-            },
-            marathon.Application{
-                ID: "/fake_app_broken",
-                CPUs: float32(1.5),
-                Mem: float32(64),
-                Disk: float32(0),
-            },
-        },
-    }
+	return &marathon.Applications{
+		Apps: []marathon.Application{
+			marathon.Application{
+				ID:   "/fake_app",
+				CPUs: float32(0.5),
+				Mem:  float32(64),
+				Disk: float32(0),
+			},
+			marathon.Application{
+				ID:   "/fake_app_broken",
+				CPUs: float32(1.5),
+				Mem:  float32(64),
+				Disk: float32(0),
+			},
+		},
+	}
 }
 
-
 func expMarathonApps() *MarathonApps {
-    return &MarathonApps {
-        Apps: []*MarathonApp {
-            expFakeApp(),
-        },
-    }
+	return &MarathonApps{
+		Apps: []*MarathonApp{
+			expFakeApp(),
+		},
+	}
 }
 
 func expFakeApp() *MarathonApp {
-    return &MarathonApp {
-        Id: "/fake_app",
-        Tasks: []*MarathonTask {
-            &MarathonTask {
-                Id: "fake-app-task",
-                Container: "fake-app-container",
-                SlaveId: "slave1",
-                SlaveHost: "slave1-host",
-            },
-        },
-    }
+	return &MarathonApp{
+		Id: "/fake_app",
+		Tasks: []*MarathonTask{
+			&MarathonTask{
+				Id:        "fake-app-task",
+				Container: "fake-app-container",
+				SlaveId:   "slave1",
+				SlaveHost: "slave1-host",
+			},
+		},
+	}
 }
-
 
 func TestLoadApps(t *testing.T) {
-    m := &Marathon{}
-    mockClient := new(MockMarathonClient)
-    err := m.LoadApps(mockClient)
-    exp := expApplications()
-    assert.Nil(t, err)
-    assert.Equal(t, len(m.Apps), len(exp.Apps), "The expected number of apps should be returned")
-    for i, app := range exp.Apps {
-        assert.Equal(t, m.Apps[i].ID, app.ID, "App should be returned")
-    }
+	m := &Marathon{}
+	mockClient := new(MockMarathonClient)
+	err := m.LoadApps(mockClient)
+	exp := expApplications()
+	assert.Nil(t, err)
+	assert.Equal(t, len(m.Apps), len(exp.Apps), "The expected number of apps should be returned")
+	for i, app := range exp.Apps {
+		assert.Equal(t, m.Apps[i].ID, app.ID, "App should be returned")
+	}
 }
 
-
 func TestGetAppById(t *testing.T) {
-    apps := expMarathonApps()
-    app := apps.GetAppById("/fake_app")
-    assert.Equal(t, app.Id, "/fake_app")
+	apps := expMarathonApps()
+	app := apps.GetAppById("/fake_app")
+	assert.Equal(t, app.Id, "/fake_app")
 }
 
 func TestGetAppByIdNotExist(t *testing.T) {
-    apps := expMarathonApps()
-    app := apps.GetAppById("/no_app")
-    assert.Nil(t, app)
+	apps := expMarathonApps()
+	app := apps.GetAppById("/no_app")
+	assert.Nil(t, app)
 }
 
 func TestGetTaskById(t *testing.T) {
-    app := expFakeApp()
-    task := app.GetTaskById("fake-app-task")
-    assert.Equal(t, task.Id, "fake-app-task")
+	app := expFakeApp()
+	task := app.GetTaskById("fake-app-task")
+	assert.Equal(t, task.Id, "fake-app-task")
 }
-
 
 func TestAddTaskExistingApp(t *testing.T) {
-    apps := expMarathonApps()
-    apps.AddTask("new-fake-app-task", "/fake_app", "slave2", "slave2-host", true, false, false)
-    assert.Equal(t, apps.Apps[0].Tasks[0].Id, "fake-app-task", "Original task should still exist")
-    assert.Equal(t, apps.Apps[0].Tasks[1].Id, "new-fake-app-task", "New Task ID should exist")
+	apps := expMarathonApps()
+	apps.AddTask("new-fake-app-task", "/fake_app", "slave2", "slave2-host", true, false, false)
+	assert.Equal(t, apps.Apps[0].Tasks[0].Id, "fake-app-task", "Original task should still exist")
+	assert.Equal(t, apps.Apps[0].Tasks[1].Id, "new-fake-app-task", "New Task ID should exist")
 }
-
 
 func TestAddTaskNotExistingApp(t *testing.T) {
-    apps := expMarathonApps()
-    apps.AddTask("faker-app-task", "/faker_app", "slave1", "slave1-host", true, false, false)
-    assert.Equal(t, apps.Apps[1].Id, "/faker_app", "New app should exist")
-    assert.Equal(t, apps.Apps[1].Tasks[0].Id, "faker-app-task", "New app task should exist")
+	apps := expMarathonApps()
+	apps.AddTask("faker-app-task", "/faker_app", "slave1", "slave1-host", true, false, false)
+	assert.Equal(t, apps.Apps[1].Id, "/faker_app", "New app should exist")
+	assert.Equal(t, apps.Apps[1].Tasks[0].Id, "faker-app-task", "New app task should exist")
 }
-
 
 func TestAddAppExisting(t *testing.T) {
-    apps := expMarathonApps()
-    apps.AddApp("/fake_app")
-    assert.Equal(t, len(apps.Apps), 1, "No new app should be added")
-    assert.Equal(t, apps.Apps[0].Id, "/fake_app", "Original app should still exist")
+	apps := expMarathonApps()
+	apps.AddApp("/fake_app")
+	assert.Equal(t, len(apps.Apps), 1, "No new app should be added")
+	assert.Equal(t, apps.Apps[0].Id, "/fake_app", "Original app should still exist")
 }
 
-
 func TestAddAppNotExisting(t *testing.T) {
-    apps := expMarathonApps()
-    apps.AddApp("/faker_app")
-    assert.Equal(t, len(apps.Apps), 2, "An additional app should exist")
-    assert.Equal(t, apps.Apps[0].Id, "/fake_app", "Original app should still exist")
-    assert.Equal(t, apps.Apps[1].Id, "/faker_app", "New app should exist")
+	apps := expMarathonApps()
+	apps.AddApp("/faker_app")
+	assert.Equal(t, len(apps.Apps), 2, "An additional app should exist")
+	assert.Equal(t, apps.Apps[0].Id, "/fake_app", "Original app should still exist")
+	assert.Equal(t, apps.Apps[1].Id, "/faker_app", "New app should exist")
 }
