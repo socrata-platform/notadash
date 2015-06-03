@@ -10,6 +10,10 @@ var VERSION = "0.1.0-beta"
 
 type boolmap map[string]bool
 
+var saRequired = []string{
+	"mesos-host",
+}
+
 var ctRequired = []string{
 	"marathon-host",
 	"mesos-host",
@@ -82,7 +86,7 @@ func buildApp() *cli.App {
 }
 
 func showAllocation(ctx *cli.Context) {
-	if missing, err := validateContext(ctx, ctRequired); err != nil {
+	if missing, err := validateContext(ctx, saRequired); err != nil {
 		fmt.Println(err)
 		fmt.Printf("The following parameters must be defined: %s\n", missing)
 		os.Exit(2)
