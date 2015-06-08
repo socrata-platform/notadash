@@ -2,16 +2,15 @@ package lib
 
 import (
 	"encoding/json"
-    "github.com/fsouza/go-dockerclient"
+	"github.com/fsouza/go-dockerclient"
 
-    "testing"
-    "github.com/stretchr/testify/assert"
-    "github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"testing"
 )
 
-
 type MockDockerClient struct {
-    mock.Mock
+	mock.Mock
 }
 
 func (c *MockDockerClient) ListContainers(opts docker.ListContainersOptions) ([]docker.APIContainers, error) {
@@ -55,37 +54,33 @@ func (c *MockDockerClient) ListContainers(opts docker.ListContainersOptions) ([]
 ]`
 	var expected []docker.APIContainers
 	json.Unmarshal([]byte(jsonContainers), &expected)
-    return expected, nil
+	return expected, nil
 }
 
-
-func (c *MockDockerClient) StopContainer(id string, ttl uint) (error) {
-    return nil
+func (c *MockDockerClient) StopContainer(id string, ttl uint) error {
+	return nil
 }
-
 
 func TestContainerExists(t *testing.T) {
-    mockDockerClient := new(MockDockerClient)
-    exists, err := ContainerRunning("cont4", mockDockerClient)
-    assert.True(t, exists, "The container must exist")
-    assert.Nil(t, err, "No error should be returned")
+	mockDockerClient := new(MockDockerClient)
+	exists, err := ContainerRunning("cont4", mockDockerClient)
+	assert.True(t, exists, "The container must exist")
+	assert.Nil(t, err, "No error should be returned")
 }
-
 
 func TestContainerDoesNotExist(t *testing.T) {
-    mockDockerClient := new(MockDockerClient)
-    exists, err := ContainerRunning("cont5", mockDockerClient)
-    assert.False(t, exists, "The container must not exist")
-    assert.Nil(t, err, "No error should be returned")
+	mockDockerClient := new(MockDockerClient)
+	exists, err := ContainerRunning("cont5", mockDockerClient)
+	assert.False(t, exists, "The container must not exist")
+	assert.Nil(t, err, "No error should be returned")
 }
 
-
 func TestListContainers(t *testing.T) {
-    expected := []string{ "cont1", "cont2", "cont3", "cont4" }
-    mockDockerClient := new(MockDockerClient)
-    exists, err := ListRunningContainers(mockDockerClient)
-    assert.Nil(t, err, "No error should be returned")
-    for i, cont := range expected {
-        assert.Equal(t, cont, exists[i], "Should be running")
-    }
+	expected := []string{"cont1", "cont2", "cont3", "cont4"}
+	mockDockerClient := new(MockDockerClient)
+	exists, err := ListRunningContainers(mockDockerClient)
+	assert.Nil(t, err, "No error should be returned")
+	for i, cont := range expected {
+		assert.Equal(t, cont, exists[i], "Should be running")
+	}
 }
