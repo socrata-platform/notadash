@@ -43,6 +43,11 @@ func buildApp() *cli.App {
 			Usage: "Show more output",
 		},
 		cli.StringFlag{
+			Name:  "hostname",
+			Usage: "Hostname to use when reporting slave allocation",
+			Value: "localhost",
+		},
+		cli.StringFlag{
 			Name:   "graphite-host",
 			Usage:  "URL to use for Graphite metrics reporting.",
 			EnvVar: "NOTADASH_GRAPHITE_URL",
@@ -51,6 +56,7 @@ func buildApp() *cli.App {
 			Name:   "graphite-port",
 			Usage:  "Port to use for Graphite metrics reporting.",
 			EnvVar: "NOTADASH_GRAPHITE_PORT",
+			Value:  2003,
 		},
 		cli.StringFlag{
 			Name:   "marathon-host",
@@ -107,7 +113,7 @@ func buildApp() *cli.App {
 }
 
 func reportSlaveAllocation(ctx *cli.Context) {
-	if missing, err := validateContext(ctx, saRequired); err != nil {
+	if missing, err := validateContext(ctx, rsaRequired); err != nil {
 		fmt.Println(err)
 		fmt.Printf("The following parameters must be defined: %s\n", missing)
 		os.Exit(2)

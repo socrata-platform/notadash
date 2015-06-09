@@ -27,18 +27,24 @@ func sendToGraphite(g *graphite.Graphite, name string, path string, metric strin
 	return
 }
 
-func loadCluster(host string) (mesos *lib.Mesos) {
-	mesos = &lib.Mesos{
+func loadSlave(host string) (slave *lib.MesosSlave, err error) {
+	mesos := &lib.Mesos{
 		Host: host,
 	}
 	mesosClient := mesos.Client()
-	mesos.LoadCluster(mesosClient)
+	slave, err = mesos.LoadSlaveStats(host, mesosClient)
 
 	return
 }
 
 func runReportSlaveAllocation(ctx *cli.Context) int {
-	cluster := loadCluster(ctx.GlobalString("mesos-host"))
+	hostname := ctx.GlobalString("hostname")
+	slave, err := loadSlave(hostname)
+	if err != nil {
+		fmt.Println(err)
+		return 1
+	}
+
 	g, err := connectToGraphite(
 		ctx.GlobalString("graphite-host"),
 		ctx.GlobalInt("graphite-port"),
@@ -49,21 +55,18 @@ func runReportSlaveAllocation(ctx *cli.Context) int {
 	}
 	defer g.Disconnect()
 
-	for _, s := range cluster.Cluster.Slaves {
-		ss := s.Stats
-		hostname := strings.Split(s.HostName, ".")[0]
-		m_path := strings.Join([]string{"mesos-stats", hostname}, ".")
+	ss := slave.Slave.Stats
+	m_path := strings.Join([]string{"mesos-stats", hostname}, ".")
 
-		sendToGraphite(g, "CpusPercent", m_path, fmt.Sprintf("%.2f", ss.CpusPercent))
-		sendToGraphite(g, "CpusUsed", m_path, fmt.Sprintf("%.2f", ss.CpusUsed))
-		sendToGraphite(g, "CpusTotal", m_path, fmt.Sprintf("%d", ss.CpusTotal))
-		sendToGraphite(g, "MemPercent", m_path, fmt.Sprintf("%.2f", ss.MemPercent))
-		sendToGraphite(g, "MemUsed", m_path, fmt.Sprintf("%d", ss.MemUsed))
-		sendToGraphite(g, "MemTotal", m_path, fmt.Sprintf("%d", ss.MemTotal))
-		sendToGraphite(g, "DiskPercent", m_path, fmt.Sprintf("%.2f", ss.DiskPercent))
-		sendToGraphite(g, "DiskUsed", m_path, fmt.Sprintf("%d", ss.DiskUsed))
-		sendToGraphite(g, "DiskTotal", m_path, fmt.Sprintf("%d", ss.DiskTotal))
-	}
+	sendToGraphite(g, "CpusPercent", m_path, fmt.Sprintf("%.2f", ss.CpusPercent))
+	sendToGraphite(g, "CpusUsed", m_path, fmt.Sprintf("%.2f", ss.CpusUsed))
+	sendToGraphite(g, "CpusTotal", m_path, fmt.Sprintf("%d", ss.CpusTotal))
+	sendToGraphite(g, "MemPercent", m_path, fmt.Sprintf("%.2f", ss.MemPercent))
+	sendToGraphite(g, "MemUsed", m_path, fmt.Sprintf("%d", ss.MemUsed))
+	sendToGraphite(g, "MemTotal", m_path, fmt.Sprintf("%d", ss.MemTotal))
+	sendToGraphite(g, "DiskPercent", m_path, fmt.Sprintf("%.2f", ss.DiskPercent))
+	sendToGraphite(g, "DiskUsed", m_path, fmt.Sprintf("%d", ss.DiskUsed))
+	sendToGraphite(g, "DiskTotal", m_path, fmt.Sprintf("%d", ss.DiskTotal))
 
 	return 0
 }
