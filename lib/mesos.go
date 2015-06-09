@@ -53,9 +53,15 @@ func (m *Mesos) Framework(framework string) FrameworkMap {
 	return m.Cluster.GetFramework(framework)
 }
 
-func (m *Mesos) LoadSlave(host string, c *mesos.Client) (*MesosSlave, error) {
+func (m *Mesos) LoadSlaveState(host string, c *mesos.Client) (*MesosSlave, error) {
 	slave := &mesos.Slave{HostName: host}
 	err := slave.LoadState(c)
+	return &MesosSlave{Slave: slave}, err
+}
+
+func (m *Mesos) LoadSlaveStats(host string, c *mesos.Client) (*MesosSlave, error) {
+	slave := &mesos.Slave{HostName: host}
+	err := slave.LoadStats(c)
 	return &MesosSlave{Slave: slave}, err
 }
 
