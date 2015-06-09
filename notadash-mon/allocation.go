@@ -16,21 +16,26 @@ func runShowAllocation(ctx *cli.Context) int {
 	mesosClient := mesos.Client()
 	mesos.LoadCluster(mesosClient)
 
+	printAllocations(mesos)
+	return 0
+}
+
+func printAllocations(mesos *lib.Mesos) int {
 	output := make([]string, 1)
 	output[0] = "Hostnamme | Cpu % | Cpu Ratio | Mem % | Mem Ratio | Disk % | Disk Ratio"
 
 	for _, s := range mesos.Cluster.Slaves {
 		ss := s.Stats
 		ln := fmt.Sprintf(
-			"%s | %.2f | %.1f/%d | %.2f | %d/%d | %.2f| %d/%d",
+			"%s | %.0f | %.1f/%d | %.0f | %d/%d | %.0f| %d/%d",
 			s.HostName,
-			ss.CpusPercent,
+			ss.CpusPercent*100,
 			ss.CpusUsed,
 			ss.CpusTotal,
-			ss.MemPercent,
+			ss.MemPercent*100,
 			ss.MemUsed,
 			ss.MemTotal,
-			ss.DiskPercent,
+			ss.DiskPercent*100,
 			ss.DiskUsed,
 			ss.DiskTotal,
 		)
