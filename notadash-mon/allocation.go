@@ -20,7 +20,6 @@ func runShowAllocation(ctx *cli.Context) int {
 	return 0
 }
 
-
 func printAllocations(mesos *lib.Mesos) int {
 	output := make([]string, 1)
 	output[0] = "Hostnamme | Cpu % | Cpu Ratio | Mem % | Mem Ratio | Disk % | Disk Ratio"
@@ -30,13 +29,13 @@ func printAllocations(mesos *lib.Mesos) int {
 		ln := fmt.Sprintf(
 			"%s | %.0f | %.1f/%d | %.0f | %d/%d | %.0f| %d/%d",
 			s.HostName,
-			ss.CpusPercent * 100,
+			ss.CpusPercent*100,
 			ss.CpusUsed,
 			ss.CpusTotal,
-			ss.MemPercent * 100,
+			ss.MemPercent*100,
 			ss.MemUsed,
 			ss.MemTotal,
-			ss.DiskPercent * 100,
+			ss.DiskPercent*100,
 			ss.DiskUsed,
 			ss.DiskTotal,
 		)

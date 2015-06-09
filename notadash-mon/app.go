@@ -11,7 +11,6 @@ var VERSION = "0.1.0-beta"
 type boolmap map[string]bool
 
 var rsaRequired = []string{
-	"mesos-host",
 	"graphite-host",
 	"graphite-port",
 }
@@ -82,8 +81,8 @@ func buildApp() *cli.App {
 
 	app.Commands = []cli.Command{
 		{
-			Name: "report-allocation",
-			Usage: "send currently allocated resources to graphite",
+			Name:   "report-allocation",
+			Usage:  "send currently allocated resources to graphite",
 			Action: reportSlaveAllocation,
 		},
 		{

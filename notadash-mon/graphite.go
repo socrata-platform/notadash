@@ -2,12 +2,11 @@ package main
 
 import (
 	"fmt"
-	"strings"
+	lib "github.com/boldfield/notadash/lib"
 	"github.com/codegangsta/cli"
 	"github.com/marpaia/graphite-golang"
-	lib "github.com/boldfield/notadash/lib"
+	"strings"
 )
-
 
 func connectToGraphite(host string, port int) (g *graphite.Graphite, err error) {
 	if g, err = graphite.NewGraphite(host, port); err != nil {
