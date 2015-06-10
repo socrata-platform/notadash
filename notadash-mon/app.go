@@ -42,9 +42,8 @@ func buildApp() *cli.App {
 			Usage: "Show more output",
 		},
 		cli.StringFlag{
-			Name:  "hostname",
-			Usage: "Hostname to use when reporting slave allocation",
-			Value: "localhost",
+			Name:  "ip-addr",
+			Usage: "IPv4 address to use when reporting slave allocation, if unspecified, the current host ip will be used",
 		},
 		cli.StringFlag{
 			Name:   "graphite-host",
