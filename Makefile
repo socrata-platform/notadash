@@ -1,5 +1,8 @@
 BUILD_ROOT = ./bin
 
+test:
+	go test ./... -v -cover 
+
 build:
 	go build -o $(BUILD_ROOT)/notadash \
 		-ldflags "-X main.VERSION $(shell cat notadash/VERSION)" \

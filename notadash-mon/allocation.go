@@ -22,7 +22,7 @@ func runShowAllocation(ctx *cli.Context) int {
 
 func printAllocations(mesos *lib.Mesos) int {
 	output := make([]string, 1)
-	output[0] = "Hostnamme | Cpu % | Cpu Ratio | Mem % | Mem Ratio | Disk % | Disk Ratio"
+	output[0] = "Hostname | Cpu % | Cpu Ratio | Mem % | Mem Ratio | Disk % | Disk Ratio"
 
 	for _, s := range mesos.Cluster.Slaves {
 		ss := s.Stats
