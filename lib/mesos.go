@@ -48,7 +48,6 @@ func (m *Mesos) LoadCluster(c *mesos.Client) error {
 }
 
 // Loads information about the cluster from the master, does not check slaves
-// TODO: (michaelb) what should this be called?
 func (m *Mesos) LoadClusterInfo(c *mesos.Client) error {
 	if cluster, err := mesos.DiscoverCluster(c); err != nil {
 		log.Println(err)
