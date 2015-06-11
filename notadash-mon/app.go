@@ -29,6 +29,10 @@ var csRequired = []string{
 	"mesos-host",
 }
 
+var ffRequired = []string{
+	"marathon-host",
+}
+
 func buildApp() *cli.App {
 	app := cli.NewApp()
 	app.Name = "notadash-mon"
@@ -105,6 +109,11 @@ func buildApp() *cli.App {
 			Usage:  "Verify all tasks registered for mesos slave are running as expected. Must be run on target mesos slave.",
 			Action: checkSlave,
 		},
+		{
+			Name: "failures",
+			Usage: "Show any marathon tasks that are failing.",
+			Action: findFailures,
+		},
 	}
 
 	return app
@@ -151,5 +160,15 @@ func checkSlave(ctx *cli.Context) {
 	}
 
 	exitStatus := runCheckSlave(ctx)
+	os.Exit(exitStatus)
+}
+
+func findFailures(ctx *cli.Context) {
+	if missing, err := validateContext(ctx, ffRequired); err != nil {
+		fmt.Println(err)
+		fmt.Printf("The following parameters must be defined: %s\n", missing)
+		os.Exit(1)
+	}
+	exitStatus := runFindFailures(ctx)
 	os.Exit(exitStatus)
 }
