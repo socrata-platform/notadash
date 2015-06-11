@@ -1,5 +1,8 @@
 BUILD_ROOT = ./bin
 
+test:
+	go test ./... -v -cover 
+
 build:
 	go build -o $(BUILD_ROOT)/notadash \
 		-ldflags "-X main.VERSION $(shell cat notadash/VERSION)" \
@@ -24,3 +27,6 @@ build-deps:
 	go get github.com/gambol99/go-marathon
 	go get github.com/boldfield/go-mesos
 	go get golang.org/x/crypto/ssh/terminal
+
+clean:
+	rm -rf bin
