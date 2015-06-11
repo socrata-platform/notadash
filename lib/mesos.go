@@ -29,12 +29,10 @@ func (m *Mesos) Client() *mesos.Client {
 	return m._client
 }
 
+// Loads the entire cluster, including information about slaves
 func (m *Mesos) LoadCluster(c *mesos.Client) error {
-	if cluster, err := mesos.DiscoverCluster(c); err != nil {
-		log.Println(err)
+	if err := m.LoadClusterInfo(c); err != nil {
 		return err
-	} else {
-		m.Cluster = cluster
 	}
 
 	if err := m.Cluster.LoadSlaveStates(c); err != nil {
@@ -45,6 +43,18 @@ func (m *Mesos) LoadCluster(c *mesos.Client) error {
 	if err := m.Cluster.LoadSlaveStats(c); err != nil {
 		log.Printf("An error was encountered loading slave states: %s", err)
 		return err
+	}
+	return nil
+}
+
+// Loads information about the cluster from the master, does not check slaves
+// TODO: (michaelb) what should this be called?
+func (m *Mesos) LoadClusterInfo(c *mesos.Client) error {
+	if cluster, err := mesos.DiscoverCluster(c); err != nil {
+		log.Println(err)
+		return err
+	} else {
+		m.Cluster = cluster
 	}
 	return nil
 }
