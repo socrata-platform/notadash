@@ -10,6 +10,11 @@ var VERSION = "0.1.0-beta"
 
 type boolmap map[string]bool
 
+var rsaRequired = []string{
+	"graphite-host",
+	"graphite-port",
+}
+
 var saRequired = []string{
 	"mesos-host",
 }
@@ -37,6 +42,21 @@ func buildApp() *cli.App {
 			Usage: "Show more output",
 		},
 		cli.StringFlag{
+			Name:  "ip-addr",
+			Usage: "IPv4 address to use when reporting slave allocation, if unspecified, the current host ip will be used",
+		},
+		cli.StringFlag{
+			Name:   "graphite-host",
+			Usage:  "URL to use for Graphite metrics reporting.",
+			EnvVar: "NOTADASH_GRAPHITE_URL",
+		},
+		cli.IntFlag{
+			Name:   "graphite-port",
+			Usage:  "Port to use for Graphite metrics reporting.",
+			EnvVar: "NOTADASH_GRAPHITE_PORT",
+			Value:  2003,
+		},
+		cli.StringFlag{
 			Name:   "marathon-host",
 			Usage:  "URL to use for Marathon cluster discovery.",
 			EnvVar: "NOTADASH_MARATHON_URL",
@@ -59,6 +79,11 @@ func buildApp() *cli.App {
 	}
 
 	app.Commands = []cli.Command{
+		{
+			Name:   "report-allocation",
+			Usage:  "send currently allocated resources to graphite",
+			Action: reportSlaveAllocation,
+		},
 		{
 			Name:   "resources",
 			Usage:  "Show resource allocation per node across the cluster.",
@@ -83,6 +108,17 @@ func buildApp() *cli.App {
 	}
 
 	return app
+}
+
+func reportSlaveAllocation(ctx *cli.Context) {
+	if missing, err := validateContext(ctx, rsaRequired); err != nil {
+		fmt.Println(err)
+		fmt.Printf("The following parameters must be defined: %s\n", missing)
+		os.Exit(2)
+	}
+
+	exitStatus := runReportSlaveAllocation(ctx)
+	os.Exit(exitStatus)
 }
 
 func showAllocation(ctx *cli.Context) {

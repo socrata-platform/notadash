@@ -178,15 +178,15 @@ func expApplications() *marathon.Applications {
 		Apps: []marathon.Application{
 			marathon.Application{
 				ID:   "/fake_app",
-				CPUs: float32(0.5),
-				Mem:  float32(64),
-				Disk: float32(0),
+				CPUs: float64(0.5),
+				Mem:  float64(64),
+				Disk: float64(0),
 			},
 			marathon.Application{
 				ID:   "/fake_app_broken",
-				CPUs: float32(1.5),
-				Mem:  float32(64),
-				Disk: float32(0),
+				CPUs: float64(1.5),
+				Mem:  float64(64),
+				Disk: float64(0),
 			},
 		},
 	}

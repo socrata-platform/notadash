@@ -98,7 +98,7 @@ func loadMesos(mesosHost string) (*lib.MesosSlave, error) {
 	}
 
 	host = bytes.Trim(host, " \n\t")
-	slave, err := mesos.LoadSlave(string(host), mesosClient)
+	slave, err := mesos.LoadSlaveState(string(host), mesosClient)
 	if err != nil {
 		return nil, err
 	}

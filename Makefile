@@ -16,6 +16,7 @@ test-deps:
 
 build-deps:
 	# TODO (boldfield) :: Generalize this
+	go get github.com/marpaia/graphite-golang
 	go get github.com/codegangsta/cli
 	go get github.com/ryanuber/columnize
 	go get code.google.com/p/gcfg
