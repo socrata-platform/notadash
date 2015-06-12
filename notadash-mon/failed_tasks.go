@@ -19,6 +19,11 @@ func runFailedTasks(ctx *cli.Context) int {
 		fmt.Println(err)
 		return 1
 	}
+
+	if ctx.GlobalBool("only-leader") {
+		mesos.ExitIfNotLeader()
+	}
+
 	frameworks := mesos.Framework("marathon")
 
 	timeWindow := ctx.Int("time-window")

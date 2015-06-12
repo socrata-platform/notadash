@@ -3,6 +3,7 @@ package lib
 import (
 	mesos "github.com/boldfield/go-mesos"
 	"log"
+	"os"
 )
 
 type FrameworkMap map[string]*mesos.Framework
@@ -56,6 +57,18 @@ func (m *Mesos) LoadClusterInfo(c *mesos.Client) error {
 		m.Cluster = cluster
 	}
 	return nil
+}
+
+func (m *Mesos) ExitIfNotLeader() {
+	externalIP, err := GetExternalIP()
+	if err != nil {
+		log.Fatal(err)
+	}
+	leaderIP := m.Cluster.GetLeader()
+	if leaderIP != externalIP {
+		log.Println("This is not the leader, exiting!")
+		os.Exit(0)
+	}
 }
 
 func (m *Mesos) Framework(framework string) FrameworkMap {
