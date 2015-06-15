@@ -21,7 +21,10 @@ func runFailedTasks(ctx *cli.Context) int {
 	}
 
 	if ctx.GlobalBool("only-leader") {
-		mesos.ExitIfNotLeader()
+		if err := mesos.ErrIfNotLeader(); err != nil {
+			fmt.Println(err)
+			return 0
+		}
 	}
 
 	frameworks := mesos.Framework("marathon")
