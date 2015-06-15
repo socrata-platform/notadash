@@ -4,7 +4,7 @@
 	"BuildConstraints": "linux",
 	"ConfigVersion": "0.9",
     "PackageVersion": "0.1.0",
-    "PrereleaseInfo": "beta7",
+    "PrereleaseInfo": "beta9",
     "TasksExclude": [
         "downloads-page"
     ],
