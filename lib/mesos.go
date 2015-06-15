@@ -58,6 +58,18 @@ func (m *Mesos) LoadClusterInfo(c *mesos.Client) error {
 	return nil
 }
 
+func (m *Mesos) ErrIfNotLeader() error {
+	externalIP, err := GetExternalIP()
+	if err != nil {
+		log.Fatal(err)
+	}
+	leaderIP := m.Cluster.GetLeader()
+	if leaderIP != externalIP {
+		return ErrLeaderRequired
+	}
+	return nil
+}
+
 func (m *Mesos) Framework(framework string) FrameworkMap {
 	return m.Cluster.GetFramework(framework)
 }

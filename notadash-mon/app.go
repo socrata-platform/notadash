@@ -74,6 +74,10 @@ func buildApp() *cli.App {
 			Name:  "ignore-deploys",
 			Usage: "Ignore active deployments when checking consensus",
 		},
+		cli.BoolFlag{
+			Name:  "only-leader",
+			Usage: "Only run command on leader instance",
+		},
 		//        cli.StringFlag{
 		//            Name:  "c, config",
 		//            Usage: "Specify a config file (default: ~/.notadash.gcfg)",
