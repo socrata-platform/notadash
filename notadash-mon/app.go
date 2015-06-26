@@ -78,6 +78,11 @@ func buildApp() *cli.App {
 			Name:  "only-leader",
 			Usage: "Only run command on leader instance",
 		},
+		cli.StringFlag{
+			Name: "chronos-host",
+			Usage: "URL to use for Chronos cluster discovery",
+			EnvVar: "NOTADASH_CHRONOS_URL",
+		},
 		//        cli.StringFlag{
 		//            Name:  "c, config",
 		//            Usage: "Specify a config file (default: ~/.notadash.gcfg)",

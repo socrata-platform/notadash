@@ -27,3 +27,4 @@ build-deps:
 	go get github.com/gambol99/go-marathon
 	go get github.com/boldfield/go-mesos
 	go get golang.org/x/crypto/ssh/terminal
+	go get github.com/behance/go-chronos/chronos
