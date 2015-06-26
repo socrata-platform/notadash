@@ -41,12 +41,20 @@ func ContainerRunning(container string, client DockerClient) (bool, error) {
 }
 
 // TODO (boldfield) :: Using this method as a data source for the above method would be nice...
-func ListRunningContainers(client DockerClient) ([]string, error) {
+func ListRunningContainers(client DockerClient, ignoredImages []string) ([]string, error) {
 	runningContainers := make([]string, 0)
 	if containers, err := client.ListContainers(docker.ListContainersOptions{All: false}); err != nil {
 		return runningContainers, err
 	} else {
+        ContainerLoop:
 		for _, c := range containers {
+			// Verify the image isn't ignored
+            for _, image := range ignoredImages {
+				if (c.Image == image) {
+					continue ContainerLoop
+				}
+			}
+            // Add each name to the running list
 			for _, n := range c.Names {
 				clean := containerRe.FindString(n)
 				runningContainers = append(runningContainers, clean)

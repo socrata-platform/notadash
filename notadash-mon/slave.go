@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
+	chronos "github.com/behance/go-chronos/chronos"
 	lib "github.com/boldfield/notadash/lib"
 	"github.com/codegangsta/cli"
 	"github.com/ryanuber/columnize"
@@ -41,7 +42,23 @@ func runCheckSlave(ctx *cli.Context) int {
 	}
 
 	orphanedContainers := make(boolmap)
-	containers, err := lib.ListRunningContainers(dockerClient)
+	ignoredImages := make([]string, 0)
+	chronosHost := ctx.GlobalString("chronos-host")
+	if chronosHost != "" {
+		config := chronos.Config{
+			URL: chronosHost,
+		}
+		client, err := chronos.NewClient(config)
+		jobs, err := client.Jobs()
+		if err == nil {
+			for _, job := range *jobs {
+				if job.Container != nil {
+					ignoredImages = append(ignoredImages, job.Container.Image)
+				}
+			}
+		}
+	}
+	containers, err := lib.ListRunningContainers(dockerClient, ignoredImages)
 	if err != nil {
 		fmt.Println(lib.PrintRed("An error occoured while determining if docker container is running!"))
 		fmt.Println(err)

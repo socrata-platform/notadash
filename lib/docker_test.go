@@ -78,7 +78,7 @@ func TestContainerDoesNotExist(t *testing.T) {
 func TestListContainers(t *testing.T) {
 	expected := []string{"cont1", "cont2", "cont3", "cont4"}
 	mockDockerClient := new(MockDockerClient)
-	exists, err := ListRunningContainers(mockDockerClient)
+	exists, err := ListRunningContainers(mockDockerClient, make([]string, 0))
 	assert.Nil(t, err, "No error should be returned")
 	for i, cont := range expected {
 		assert.Equal(t, cont, exists[i], "Should be running")
