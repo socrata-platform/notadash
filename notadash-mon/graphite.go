@@ -3,15 +3,15 @@ package main
 import (
 	"fmt"
 	lib "github.com/boldfield/notadash/lib"
-	"log"
 	"github.com/codegangsta/cli"
 	"github.com/marpaia/graphite-golang"
+	"log"
 	"net"
-	"strings"
 	"os"
+	"strings"
 )
 
-func connectToGraphite(host string, port int) (*graphite.Graphite) {
+func connectToGraphite(host string, port int) *graphite.Graphite {
 	g, err := graphite.NewGraphite(host, port)
 	if err != nil {
 		log.Printf("An error occurred while trying to connect to the graphite server: (%s:%d)", host, port)
@@ -29,7 +29,7 @@ func sendToGraphite(g *graphite.Graphite, name string, path string, metric strin
 	return
 }
 
-func loadSlave(host string) (*lib.MesosSlave) {
+func loadSlave(host string) *lib.MesosSlave {
 	mesos := &lib.Mesos{
 		Host: host,
 	}
@@ -42,7 +42,7 @@ func loadSlave(host string) (*lib.MesosSlave) {
 	return slave
 }
 
-func getHostIp() (string) {
+func getHostIp() string {
 	host, err := os.Hostname()
 	out, err := net.LookupIP(host)
 	if err != nil {
