@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/boldfield/notadash.svg?branch=master)](https://travis-ci.org/boldfield/notadash)
+[![Build Status](https://travis-ci.org/socrata-platform/notadash.svg?branch=master)](https://travis-ci.org/socrata-platform/notadash)
 
 # notadash
 
