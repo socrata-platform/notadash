@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	chronos "github.com/behance/go-chronos/chronos"
-	lib "github.com/boldfield/notadash/lib"
+	lib "github.com/socrata-platform/notadash/lib"
 	"github.com/codegangsta/cli"
 	"github.com/ryanuber/columnize"
 	"os/exec"

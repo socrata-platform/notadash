@@ -3,7 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
-	lib "github.com/boldfield/notadash/lib"
+	lib "github.com/socrata-platform/notadash/lib"
 	"github.com/codegangsta/cli"
 	"os"
 )

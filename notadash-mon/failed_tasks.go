@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	lib "github.com/boldfield/notadash/lib"
+	lib "github.com/socrata-platform/notadash/lib"
 	"github.com/codegangsta/cli"
 	"github.com/ryanuber/columnize"
 	"time"
