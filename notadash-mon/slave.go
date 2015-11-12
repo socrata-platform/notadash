@@ -142,12 +142,12 @@ func buildMesosMarathonMatrix(slaveId, slaveHostName string, slaveFrameworks lib
 			for _, f := range slaveFrameworks {
 				for _, e := range f.Executors {
 					for _, t := range e.Tasks {
-						containerRunning, err := lib.ContainerRunning(e.RegisteredContainerName(), dockerClient)
+						containerRunning, err := lib.ContainerRunning(e.RegisteredContainerName(t), dockerClient)
 						if err != nil {
 							return nil, err
 						}
 						mTask := marathonApps.AddTask(t.Id, t.AppId(), slaveId, slaveHostName, true, false, containerRunning)
-						mTask.Container = e.RegisteredContainerName()
+						mTask.Container = e.RegisteredContainerName(t)
 					}
 				}
 			}
