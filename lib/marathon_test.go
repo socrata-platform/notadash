@@ -7,13 +7,14 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"
+        "net/url"
 )
 
 type MockMarathonClient struct {
 	mock.Mock
 }
 
-func (c *MockMarathonClient) ListApplications() ([]string, error) {
+func (c *MockMarathonClient) ListApplications(v url.Values) ([]string, error) {
 	var thing []string
 	return thing, nil
 }
@@ -37,7 +38,7 @@ func (c *MockMarathonClient) Tasks(string) (*marathon.Tasks, error) {
 	return &expected, nil
 }
 
-func (c *MockMarathonClient) Applications() (*marathon.Applications, error) {
+func (c *MockMarathonClient) Applications(v url.Values) (*marathon.Applications, error) {
 	jsonContainers := `{
     "apps": [
         {
