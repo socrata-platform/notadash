@@ -2,12 +2,13 @@ package lib
 
 import (
 	marathon "github.com/gambol99/go-marathon"
+	"net/url"
 	"log"
 )
 
 type MarathonClient interface {
-	ListApplications() ([]string, error)
-	Applications() (*marathon.Applications, error)
+	ListApplications(url.Values) ([]string, error)
+	Applications(url.Values) (*marathon.Applications, error)
 	Tasks(string) (*marathon.Tasks, error)
 }
 
@@ -52,7 +53,7 @@ func (m *Marathon) Client() marathon.Marathon {
 }
 
 func (m *Marathon) LoadApps(client MarathonClient) error {
-	if applications, err := client.Applications(); err != nil {
+	if applications, err := client.Applications(*new(url.Values)); err != nil {
 		log.Println("Failed to list applications: ", err)
 		return ErrMarathonError
 	} else {

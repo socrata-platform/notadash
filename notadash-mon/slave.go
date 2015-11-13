@@ -11,7 +11,7 @@ import (
 )
 
 func runCheckSlave(ctx *cli.Context) int {
-	fmt.Println("Discoving running applications and associated tasks...")
+	fmt.Println("Discovering running applications and associated tasks...")
 
 	marathon, err := loadMarathon(ctx.GlobalString("marathon-host"))
 	if err != nil {
@@ -126,7 +126,7 @@ func buildMesosMarathonMatrix(slaveId, slaveHostName string, slaveFrameworks lib
 	marathonApps := &lib.MarathonApps{}
 	if len(slaveFrameworks) > 0 {
 		for _, a := range marathon.Apps {
-			if len(a.DeploymentID) > 0 && ignoreDeploys {
+			if len(a.Deployments) > 0 && ignoreDeploys {
 				continue
 			}
 

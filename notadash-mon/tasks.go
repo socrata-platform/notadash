@@ -8,7 +8,7 @@ import (
 )
 
 func runCheckTasks(ctx *cli.Context) int {
-	fmt.Println("Discoving running applications and associated tasks...")
+	fmt.Println("Discovering running applications and associated tasks...")
 
 	marathon, err := loadMarathon(ctx.GlobalString("marathon-host"))
 	if err != nil {
@@ -29,7 +29,7 @@ func runCheckTasks(ctx *cli.Context) int {
 
 	if len(mesosFrameworks) > 0 {
 		for _, a := range marathon.Apps {
-			if len(a.DeploymentID) > 0 && ctx.GlobalBool("ignore-deploys") {
+			if len(a.Deployments) > 0 && ctx.GlobalBool("ignore-deploys") {
 				continue
 			}
 
