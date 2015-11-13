@@ -27,15 +27,15 @@ func printAllocations(mesos *lib.Mesos) int {
 	for _, s := range mesos.Cluster.Slaves {
 		ss := s.Stats
 		ln := fmt.Sprintf(
-			"%s | %.0f | %.1f/%d | %.0f | %d/%d | %.0f| %d/%d",
+			"%s | %.0f | %.1f/%.0f | %.0f | %.0f/%.0f | %.0f| %.0f/%.0f",
 			s.HostName,
-			ss.CpusPercent*100,
+			ss.CpusPercent*100.0,
 			ss.CpusUsed,
 			ss.CpusTotal,
-			ss.MemPercent*100,
+			ss.MemPercent*100.0,
 			ss.MemUsed,
 			ss.MemTotal,
-			ss.DiskPercent*100,
+			ss.DiskPercent*100.0,
 			ss.DiskUsed,
 			ss.DiskTotal,
 		)
