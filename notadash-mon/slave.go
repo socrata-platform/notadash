@@ -28,7 +28,7 @@ func runCheckSlave(ctx *cli.Context) int {
 	slaveFrameworks := slave.Framework("marathon")
 
 	dockerClient := lib.NewDockerClient()
-	marathonApps, err := buildMesosMarathonMatrix(slave.Slave.Id, slave.Slave.HostName, slaveFrameworks, marathon, dockerClient, ctx.GlobalBool("ignore-deploys"))
+	marathonApps, ignoredImages, err := buildMesosMarathonMatrix(slave.Slave.Id, slave.Slave.HostName, slaveFrameworks, marathon, dockerClient, ctx.GlobalBool("ignore-deploys"))
 	if err != nil {
 		fmt.Println(err)
 		return 1
@@ -42,7 +42,6 @@ func runCheckSlave(ctx *cli.Context) int {
 	}
 
 	orphanedContainers := make(boolmap)
-	ignoredImages := make([]string, 0)
 	chronosHost := ctx.GlobalString("chronos-host")
 	if chronosHost != "" {
 		config := chronos.Config{
@@ -122,16 +121,18 @@ func loadMesos(mesosHost string) (*lib.MesosSlave, error) {
 	return slave, nil
 }
 
-func buildMesosMarathonMatrix(slaveId, slaveHostName string, slaveFrameworks lib.FrameworkMap, marathon *lib.Marathon, dockerClient lib.DockerClient, ignoreDeploys bool) (*lib.MarathonApps, error) {
+func buildMesosMarathonMatrix(slaveId, slaveHostName string, slaveFrameworks lib.FrameworkMap, marathon *lib.Marathon, dockerClient lib.DockerClient, ignoreDeploys bool) (*lib.MarathonApps, []string, error) {
+	ignoredImages := make([]string, 0)
 	marathonApps := &lib.MarathonApps{}
 	if len(slaveFrameworks) > 0 {
 		for _, a := range marathon.Apps {
 			if len(a.Deployments) > 0 && ignoreDeploys {
+				ignoredImages = append(ignoredImages, a.Container.Docker.Image)
 				continue
 			}
 
 			if tasks, err := marathon.Client().Tasks(a.ID); err != nil {
-				return nil, err
+				return nil, nil, err
 			} else {
 				for _, t := range tasks.Tasks {
 					if slaveHostName == t.Host {
@@ -144,7 +145,7 @@ func buildMesosMarathonMatrix(slaveId, slaveHostName string, slaveFrameworks lib
 					for _, t := range e.Tasks {
 						containerRunning, err := lib.ContainerRunning(e.RegisteredContainerName(t), dockerClient)
 						if err != nil {
-							return nil, err
+							return nil, nil, err
 						}
 						mTask := marathonApps.AddTask(t.Id, t.AppId(), slaveId, slaveHostName, true, false, containerRunning)
 						mTask.Container = e.RegisteredContainerName(t)
@@ -153,7 +154,7 @@ func buildMesosMarathonMatrix(slaveId, slaveHostName string, slaveFrameworks lib
 			}
 		}
 	}
-	return marathonApps, nil
+	return marathonApps, ignoredImages, nil
 }
 
 func verifyApplications(marathonApps *lib.MarathonApps) (bool, boolmap, []string, error) {

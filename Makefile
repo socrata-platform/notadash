@@ -1,7 +1,7 @@
 BUILD_ROOT = ./bin
 
 test:
-	go test ./... -v -cover 
+	go test ./... -v -cover
 
 build:
 	go build -o $(BUILD_ROOT)/notadash \
@@ -22,7 +22,7 @@ build-deps:
 	go get github.com/marpaia/graphite-golang
 	go get github.com/codegangsta/cli
 	go get github.com/ryanuber/columnize
-	go get code.google.com/p/gcfg
+	go get github.com/scalingdata/gcfg
 	go get github.com/fsouza/go-dockerclient
 	go get github.com/gambol99/go-marathon
 	go get github.com/boldfield/go-mesos
