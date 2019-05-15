@@ -76,13 +76,13 @@ func runReportSlaveAllocation(ctx *cli.Context) int {
 
 	sendToGraphite(g, "CpusPercent", m_path, fmt.Sprintf("%.2f", ss.CpusPercent))
 	sendToGraphite(g, "CpusUsed", m_path, fmt.Sprintf("%.2f", ss.CpusUsed))
-	sendToGraphite(g, "CpusTotal", m_path, fmt.Sprintf("%d", ss.CpusTotal))
+	sendToGraphite(g, "CpusTotal", m_path, fmt.Sprintf("%.2f", ss.CpusTotal))
 	sendToGraphite(g, "MemPercent", m_path, fmt.Sprintf("%.2f", ss.MemPercent))
-	sendToGraphite(g, "MemUsed", m_path, fmt.Sprintf("%d", ss.MemUsed))
-	sendToGraphite(g, "MemTotal", m_path, fmt.Sprintf("%d", ss.MemTotal))
+	sendToGraphite(g, "MemUsed", m_path, fmt.Sprintf("%.2f", ss.MemUsed))
+	sendToGraphite(g, "MemTotal", m_path, fmt.Sprintf("%.2f", ss.MemTotal))
 	sendToGraphite(g, "DiskPercent", m_path, fmt.Sprintf("%.2f", ss.DiskPercent))
-	sendToGraphite(g, "DiskUsed", m_path, fmt.Sprintf("%d", ss.DiskUsed))
-	sendToGraphite(g, "DiskTotal", m_path, fmt.Sprintf("%d", ss.DiskTotal))
+	sendToGraphite(g, "DiskUsed", m_path, fmt.Sprintf("%.2f", ss.DiskUsed))
+	sendToGraphite(g, "DiskTotal", m_path, fmt.Sprintf("%.2f", ss.DiskTotal))
 
 	log.Printf("Metrics Sent!")
 	return 0
