@@ -5,12 +5,12 @@ test:
 
 build:
 	go build -o $(BUILD_ROOT)/notadash \
-		-ldflags "-X main.VERSION $(shell cat notadash/VERSION)" \
+		-ldflags "-X main.VERSION=$(shell cat notadash/VERSION)" \
 		notadash/*.go
 
 build-mon:
 	go build -o $(BUILD_ROOT)/notadash-mon \
-		-ldflags "-X main.VERSION $(shell cat notadash-mon/VERSION)" \
+		-ldflags "-X main.VERSION=$(shell cat notadash-mon/VERSION)" \
 		notadash-mon/*.go
 
 test-deps:
@@ -25,6 +25,6 @@ build-deps:
 	go get github.com/scalingdata/gcfg
 	go get github.com/fsouza/go-dockerclient
 	go get github.com/gambol99/go-marathon
-	go get github.com/boldfield/go-mesos
+	go get github.com/socrata-platform/go-mesos
 	go get golang.org/x/crypto/ssh/terminal
 	go get github.com/behance/go-chronos/chronos

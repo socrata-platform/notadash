@@ -175,19 +175,21 @@ func (c *MockMarathonClient) Applications(v url.Values) (*marathon.Applications,
 }
 
 func expApplications() *marathon.Applications {
+        mem := float64(64)
+        disk := float64(0)
 	return &marathon.Applications{
 		Apps: []marathon.Application{
 			marathon.Application{
 				ID:   "/fake_app",
 				CPUs: float64(0.5),
-				Mem:  float64(64),
-				Disk: float64(0),
+				Mem:  &mem,
+				Disk: &disk,
 			},
 			marathon.Application{
 				ID:   "/fake_app_broken",
 				CPUs: float64(1.5),
-				Mem:  float64(64),
-				Disk: float64(0),
+				Mem:  &mem,
+				Disk: &disk,
 			},
 		},
 	}

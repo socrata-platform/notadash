@@ -1,7 +1,7 @@
 package lib
 
 import (
-	mesos "github.com/boldfield/go-mesos"
+	mesos "github.com/socrata-platform/go-mesos"
 	"log"
 )
 
